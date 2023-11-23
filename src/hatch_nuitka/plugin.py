@@ -3,6 +3,8 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import platform
 
 class NuitkaBuildHook(BuildHookInterface):
+    PLUGIN_NAME = "nuitka"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__config_nuitka_args = None

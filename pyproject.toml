@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -32,7 +32,10 @@ Issues = "https://github.com/HSPK/hatch-nuitka/issues"
 Source = "https://github.com/HSPK/hatch-nuitka"
 
 [tool.hatch.version]
-path = "src/hatch_nuitka/__about__.py"
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/hatch_nuitka/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
