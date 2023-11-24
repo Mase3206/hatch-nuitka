@@ -1,61 +1,53 @@
 from typing import Any
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
-import platform
+import os
+import subprocess
+
 
 class NuitkaBuildHook(BuildHookInterface):
     PLUGIN_NAME = "nuitka"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__config_nuitka_args = None
-        self.__config_options = None
-        self.__config_separation = None
-        self.__config_build_dir = None
-        self.__config_include = None
-        self.__config_exclude = None
-        self.__package_source = None
-        self.__include_spec = None
-        self.__exclude_spec = None
-        self.__included_files = None
-        self.__normalized_included_files = None
-        self.__artifact_globs = None
-        self.__normalized_artifact_globs = None
-        self.__artifact_patterns = None
-        self._on_windows = platform.system() == 'Windows'
-        self.__compiled_extension = '.pyd' if self._on_windows else '.so'
-        
+        self.__output_dir = None
+
     @property
-    def config_nuitka(self):
-        if self.__config_nuitka_args is None:
-            nuitka_args = self.config.get('nuitka-args', {})
-            if isinstance(self.__config_nuitka_args, list):
-                for i, argument in enumerate(nuitka_args, 1):
-                    if not isinstance(argument, str):
-                        raise ValueError(f"nuitka-args[{i}] is not a string")
-                    elif not argument:
-                        raise ValueError(f"nuitka-args[{i}] is empty")
-            else:
-                raise ValueError("nuitka-args is not a list")
-            self.__config_nuitka_args = nuitka_args
-        return self.__config_nuitka_args
-    
+    def output_dir(self) -> str:
+        if self.__output_dir is None:
+            self.__output_dir = os.path.join(self.root, "nuitka_output")
+        return self.__output_dir
+
     @property
-    def config_options(self):
-        if self.__config_options is None:
-            options = self.config.get('options', {})
-            if not isinstance(options, dict):
-                raise ValueError("options is not a dict")
-            self.__config_options = options
-        return self.__config_options
-    
-    @property
-    def config_separation(self):
-        if self.__config_separation is None:
-            self.__config_separation = self.config.get('separation', False) == True
-        return self.__config_separation
-    
-    
+    def artifact_patterns(self) -> str:
+        return [os.path.join(self.output_dir, "*")]
+
+    def get_inclusion_map(self) -> dict[str, str]:
+        inclusion_map = {}
+        from glob import glob
+
+        for path in glob(os.path.join(self.output_dir, "*")):
+            inclusion_map[path] = os.path.relpath(path, self.output_dir)
+        return inclusion_map
+
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
         if self.target_name != "wheel":
             return
-        
+
+        package = self.build_config.packages[0]
+        process = subprocess.run(
+            [
+                "nuitka3",
+                "--module",
+                f"--include-package={package}",
+                f"{package}",
+                f"--output-dir={self.output_dir}",
+                "--remove-output",
+            ],
+        )
+        if process.returncode:
+            raise Exception(process.stdout.decode("utf-8"))
+
+        build_data['infer_tag'] = True
+        build_data['pure_python'] = False
+        build_data['artifacts'].extend(self.artifact_patterns)
+        build_data["force_include"] = self.get_inclusion_map()
