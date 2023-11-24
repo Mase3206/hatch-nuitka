@@ -34,20 +34,26 @@ class NuitkaBuildHook(BuildHookInterface):
             return
 
         package = self.build_config.packages[0]
+        args = self.config.get("nuitka_args", [])
+        default_args = [
+            "--module",
+            f"--include-package={package}",
+            f"{package}",
+            f"--output-dir={self.output_dir}",
+            "--remove-output",
+        ]
+        args = args or default_args
         process = subprocess.run(
-            [
-                "nuitka3",
-                "--module",
-                f"--include-package={package}",
-                f"{package}",
-                f"--output-dir={self.output_dir}",
-                "--remove-output",
-            ],
+            ["nuitka3", *args],
         )
         if process.returncode:
             raise Exception(process.stdout.decode("utf-8"))
 
-        build_data['infer_tag'] = True
-        build_data['pure_python'] = False
-        build_data['artifacts'].extend(self.artifact_patterns)
+        build_data["infer_tag"] = True
+        build_data["pure_python"] = False
+        build_data["artifacts"].extend(self.artifact_patterns)
         build_data["force_include"] = self.get_inclusion_map()
+
+    def finalize(self, version: str, build_data: dict[str, Any], artifact_path: str) -> None:
+        files = [f.relative_path for f in self.build_config.builder.recurse_included_files()]
+        print("Files included in the wheel:", files)
