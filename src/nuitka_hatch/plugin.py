@@ -48,6 +48,10 @@ class NuitkaBuildHook(BuildHookInterface):
         )
         if process.returncode:
             msg = process.stdout
+            if not msg:
+                msg = process.stderr
+            if not msg:
+                msg = f"Nuitka failed with return code {process.returncode}"
             if isinstance(msg, bytes):
                 msg = msg.decode("utf-8")
             raise Exception(msg)
