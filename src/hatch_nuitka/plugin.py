@@ -47,7 +47,10 @@ class NuitkaBuildHook(BuildHookInterface):
             ["nuitka3", *args],
         )
         if process.returncode:
-            raise Exception(process.stdout.decode("utf-8"))
+            msg = process.stdout
+            if isinstance(msg, bytes):
+                msg = msg.decode("utf-8")
+            raise Exception(msg)
 
         build_data["infer_tag"] = True
         build_data["pure_python"] = False
