@@ -32,13 +32,13 @@ Issues = "https://github.com/HSPK/hatch-nuitka/issues"
 Source = "https://github.com/HSPK/hatch-nuitka"
 
 [project.entry-points.hatch]
-nuitka = "hatch_nuitka.hooks"
+nuitka = "nuitka_hatch.hooks"
 
 [tool.hatch.version]
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/hatch_nuitka/__about__.py"
+version-file = "src/nuitka_hatch/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -68,7 +68,7 @@ dependencies = [
   "ruff>=0.0.243",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/hatch_nuitka tests}"
+typing = "mypy --install-types --non-interactive {args:src/nuitka_hatch tests}"
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
@@ -134,7 +134,7 @@ unfixable = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["hatch_nuitka"]
+known-first-party = ["nuitka_hatch"]
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -144,16 +144,16 @@ ban-relative-imports = "all"
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
 [tool.coverage.run]
-source_pkgs = ["hatch_nuitka", "tests"]
+source_pkgs = ["nuitka_hatch", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/hatch_nuitka/__about__.py",
+  "src/nuitka_hatch/__about__.py",
 ]
 
 [tool.coverage.paths]
-hatch_nuitka = ["src/hatch_nuitka", "*/hatch-nuitka/src/hatch_nuitka"]
-tests = ["tests", "*/hatch-nuitka/tests"]
+nuitka_hatch = ["src/nuitka_hatch", "*/nuitka_hatch/src/nuitka_hatch"]
+tests = ["tests", "*/nuitka_hatch/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
