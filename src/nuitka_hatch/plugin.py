@@ -47,8 +47,8 @@ class NuitkaBuildHook(BuildHookInterface):
             ["nuitka3", *args],
         )
         msg = process.stdout or process.stderr
-        if process.returncode and not msg:
-            raise Exception("Failed to build wheel")
+        if process.returncode and msg:
+            raise Exception(f"Failed to build wheel: {msg}")
 
         build_data["infer_tag"] = True
         build_data["pure_python"] = False
