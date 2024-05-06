@@ -12,7 +12,7 @@ import pytest
 def plugin_dir() -> Generator[Path, None, None]:
     with TemporaryDirectory() as d:
         directory = Path(d, 'plugin')
-        shutil.copytree(Path.cwd(), directory, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(Path.cwd(), directory)
         
         yield directory.resolve()
         
@@ -29,7 +29,7 @@ def new_project(plugin_dir, tmp_path) -> Generator[Path, None, None]:
     project_file.write_text(
         f"""\
 [build-system]
-requires = ["hatchling", "nuitka", "wheel", "setuptools", "hatch-nuitka @ {plugin_dir.as_uri()}"]
+requires = ["hatchling", "nuitka", "wheel", "setuptools", "nuitka-hatch @ {plugin_dir.as_uri()}"]
 build-backend = "hatchling.build"
 
 [project]
@@ -38,7 +38,7 @@ dependencies = []
 dynamic = ["version"]
 
 [tool.hatch.version]
-path = "src/my_app/__init__.py"
+path = "my_app/__init__.py"
 
 [tool.hatch.build.targets.wheel.hooks.nuitka]
 --module = true
@@ -46,9 +46,7 @@ path = "src/my_app/__init__.py"
         encoding="utf-8",
     )
     
-    src_dir = project_dir / "src"
-    src_dir.mkdir()
-    package_dir = src_dir / "my_app"
+    package_dir = project_dir / "my_app"
     package_dir.mkdir()
     
     package_root = package_dir / "__init__.py"

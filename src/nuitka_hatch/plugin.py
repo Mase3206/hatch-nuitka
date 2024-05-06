@@ -1,6 +1,7 @@
 from typing import Any
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import os
+from loguru import logger
 import subprocess
 
 
@@ -43,12 +44,13 @@ class NuitkaBuildHook(BuildHookInterface):
             "--remove-output",
         ]
         args = args or default_args
+        logger.info(f"Building wheel with Nuitka: {' '.join(args)}")
         process = subprocess.run(
             ["nuitka3", *args],
         )
         msg = process.stdout or process.stderr
-        if process.returncode and msg:
-            raise Exception(f"Failed to build wheel: {msg}")
+        if process.returncode and not msg:
+            raise Exception(f"Failed to build wheel: {process.returncode}/{msg}")
 
         build_data["infer_tag"] = True
         build_data["pure_python"] = False
