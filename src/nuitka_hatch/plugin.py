@@ -46,15 +46,9 @@ class NuitkaBuildHook(BuildHookInterface):
         process = subprocess.run(
             ["nuitka3", *args],
         )
-        if process.returncode:
-            msg = process.stdout
-            if not msg:
-                msg = process.stderr
-            if not msg:
-                msg = f"Nuitka failed with return code {process.returncode}"
-            if isinstance(msg, bytes):
-                msg = msg.decode("utf-8")
-            raise Exception(msg)
+        msg = process.stdout or process.stderr
+        if process.returncode and not msg:
+            raise Exception("Failed to build wheel")
 
         build_data["infer_tag"] = True
         build_data["pure_python"] = False
