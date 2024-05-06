@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hatch-nuitka"
+name = "hatch-nuitka3"
 dynamic = ["version"]
 description = 'hatch nuitka plugin'
 readme = "README.md"
