@@ -4,7 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nuitka-hatch2"
-dynamic = ["version"]
+version = "0.1.1"
+# dynamic = ["version"]
 description = 'hatch nuitka plugin'
 readme = "README.md"
 requires-python = ">=3.9"
@@ -31,11 +32,8 @@ Documentation = "https://github.com/HSPK/hatch-nuitka#readme"
 Issues = "https://github.com/HSPK/hatch-nuitka/issues"
 Source = "https://github.com/HSPK/hatch-nuitka"
 
-[tool.poetry]
-version = "0.1.1"
-
 [project.entry-points.hatch]
-nuitka = "nuitka_hatch2.hooks"
+nuitka2 = "nuitka_hatch2.hooks"
 
 [tool.hatch.version]
 source = "vcs"
