@@ -46,7 +46,7 @@ class NuitkaBuildHook(BuildHookInterface):
         args = args or default_args
         logger.info(f"Building wheel with Nuitka: {' '.join(args)}")
         process = subprocess.run(
-            ["nuitka3", *args],
+            ["python", "-m", "nuitka", *args],
         )
         msg = process.stdout or process.stderr
         if process.returncode and not msg:
