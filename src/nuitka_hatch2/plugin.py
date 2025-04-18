@@ -6,7 +6,7 @@ import subprocess
 
 
 class NuitkaBuildHook(BuildHookInterface):
-    PLUGIN_NAME = "nuitka"
+    PLUGIN_NAME = "nuitka2"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
